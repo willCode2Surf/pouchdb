@@ -711,6 +711,7 @@ deletedDocAdapters.map(function(adapters) {
       remote.bulkDocs({docs: docs}, {}, function(err, results) {
         db.replicate.from(remoteName, {filter: 'foo/even'}, function(err, result) {
           ok(true, 'Complete callback called');
+          start();
         });
       });
     });
