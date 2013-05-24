@@ -695,6 +695,27 @@ deletedDocAdapters.map(function(adapters) {
         });
     });
   });
+
+  asyncTest('Complete callback not called', function() {
+    var self = this;
+    var remoteName = this.remote;
+    var doc = {
+      _id: '_design/foo',
+      filters: {
+        even: 'function(doc) { return doc.integer % 2 === 0; }'
+      }
+    };
+    var docs = [{_id: 'a', integer: 1}, {_id: "b", integer: 2}, doc];
+
+    initDBPair(this.name, this.remote, function(db, remote) {
+      remote.bulkDocs({docs: docs}, {}, function(err, results) {
+        db.replicate.from(remoteName, {filter: 'foo/even'}, function(err, result) {
+          ok(true, 'Complete callback called');
+        });
+      });
+    });
+  });
+
 });
 
 // This test only needs to run for one configuration, and it slows stuff
