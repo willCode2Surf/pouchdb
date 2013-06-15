@@ -1,17 +1,17 @@
 /*globals initTestDB: false, emit: true, generateAdapterUrl: false */
 /*globals PERSIST_DATABASES: false, initDBPair: false, utils: true */
-/*globals ajax: true, LevelPouch: true */
+/*globals ajax: true, HTTPPouch: true */
 
-"use strict";
+'use strict';
 
 var adapter = 'http-1';
 var qunit = module;
-var LevelPouch;
+var HTTPPouch;
 
 if (typeof module !== undefined && module.exports) {
-  Pouch = require('../src/pouch.js');
-  LevelPouch = require('../src/adapters/pouch.leveldb.js');
-  utils = require('./test.utils.js');
+  var Pouch = require('../src/pouch.js');
+  HTTPPouch = require('../src/adapters/pouch.http.js');
+  var utils = require('./test.utils.js');
 
   for (var k in utils) {
     global[k] = global[k] || utils[k];
@@ -19,29 +19,27 @@ if (typeof module !== undefined && module.exports) {
   qunit = QUnit.module;
 }
 
-qunit("http-adapter", {
+qunit('http-adapter', {
   setup: function() {
     this.name = generateAdapterUrl(adapter);
   },
   teardown: function() {
     if (!PERSIST_DATABASES) {
-      Pouch.destroy(this.name);
+      stop();
+      Pouch.destroy(this.name, function(err, info) {start();});
     }
   }
 });
 
-
-
-asyncTest("Create a pouch without DB setup", function() {
-  var instantDB;
+asyncTest('Create a pouch without DB setup', 1, function() {
   var name = this.name;
-  Pouch.destroy(name, function() {
+  var instantDB;
+
+  Pouch.destroy(name, function(err, info) {
     instantDB = new Pouch(name, {skipSetup: true});
-    instantDB.post({test:"abc"}, function(err, info) {
+    instantDB.post({test: 'abc'}, function(err, info) {
       ok(err && err.error === 'not_found', 'Skipped setup of database');
       start();
     });
   });
 });
-
-

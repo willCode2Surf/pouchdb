@@ -546,19 +546,41 @@ var PouchAdapter = function(opts, callback) {
 
   api.replicate = {};
 
-  api.replicate.from = function (url, opts, callback) {
+  api.replicate.from = function(url, opts, callback) {
     if (typeof opts === 'function') {
       callback = opts;
       opts = {};
     }
+
+    if (opts.hasOwnProperty('withCredentials')) {
+      delete opts['withCredentials'];
+      opts['srcWithCredentials'] = true;
+    }
+
+    if (opts.hasOwnProperty('cookieAuth')) {
+      opts['srcWithCookieAuth'] = opts['cookieAuth'];
+      delete opts['cookieAuth'];
+    }
+
     return Pouch.replicate(url, customApi, opts, callback);
   };
 
-  api.replicate.to = function (dbName, opts, callback) {
+  api.replicate.to = function(dbName, opts, callback) {
     if (typeof opts === 'function') {
       callback = opts;
       opts = {};
     }
+
+    if (opts.hasOwnProperty('withCredentials')) {
+      delete opts['withCredentials'];
+      opts['targetWithCredentials'] = true;
+    }
+
+    if (opts.hasOwnProperty('cookieAuth')) {
+      opts['targetWithCookieAuth'] = opts['cookieAuth'];
+      delete opts['cookieAuth'];
+    }
+
     return Pouch.replicate(customApi, dbName, opts, callback);
   };
 
