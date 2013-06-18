@@ -212,42 +212,6 @@ adapters.map(function(adapter) {
     });
   });
 
-  /*
-  asyncTest("Sync a doc", 6, function() {
-    var couch = generateAdapterUrl('http-2');
-    initTestDB(this.name, function(err, db) {
-      ok(!err, 'opened the pouch');
-      initTestDB(couch, function(err, db2) {
-        ok(!err, 'opened the couch');
-        db.put({_id:"adoc", test:"somestuff"}, function (err, info) {
-          ok(!err, 'saved a doc with post');
-          db.replicate.to(couch, function(err, info) {
-            ok(!err, 'replicated pouch to couch');
-            db.replicate.from(couch, function(err, info) {
-              ok(!err, 'replicated couch back to pouch');
-              db.get("adoc", {conflicts:true}, function(err, doc) {
-                ok(!doc._conflicts, 'doc has no conflicts');
-                start();
-              });
-            });
-          });
-        });
-      })
-    });
-  });
-  */
-
-  // From here we are copying over tests from CouchDB
-  // https://github.com/apache/couchdb/blob/master/share/www/script/test/basics.js
-  /*
-  asyncTest("Check database with slashes", 1, function() {
-    initTestDB('idb://test_suite_db%2Fwith_slashes', function(err, db) {
-      ok(!err, 'opened');
-      start();
-    });
-  });
-  */
-
   asyncTest("Basic checks", 8, function() {
     initTestDB(this.name, function(err, db) {
       db.info(function(err, info) {
@@ -367,9 +331,32 @@ adapters.map(function(adapter) {
       });
     });
   });
+
   test('Error works', 1, function() {
-    deepEqual(Pouch.error(Pouch.Errors.BAD_REQUEST, "love needs no reason"),
-      {status: 400, error: "bad_request", reason: "love needs no reason"},
-      "should be the same");
+    deepEqual(Pouch.error(Pouch.Errors.BAD_REQUEST, "love needs no reason"), {
+      status: 400,
+      error: "bad_request",
+      reason: "love needs no reason"
+    }, "should be the same");
   });
+
+  asyncTest('Test slashes in ids', function() {
+    var originalDoc = {_id: 'an/id', contents: 'stuff'};
+    initTestDB(this.name, function(err, db) {
+      console.log('writing');
+      db.put(originalDoc, function(err, info) {
+        console.log('done writing');
+        strictEqual(info.id, originalDoc._id, 'ids match');
+        db.get(originalDoc._id, function(err, doc) {
+          console.log(doc);
+          ok(doc && 'contents' in doc, 'can fetch doc by id');
+          db.allDocs(function(err, data) {
+            strictEqual(data.rows[0].id, originalDoc._id, 'id same via allDocs');
+            start();
+          });
+        });
+      });
+    });
+  });
+
 });
