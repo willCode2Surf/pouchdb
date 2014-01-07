@@ -171,15 +171,13 @@ testUtils.initDBPair = function(local, remote, callback) {
   });
 }
 
-var testId = testUtils.uuid();
-
 testUtils.generateAdapterUrl = function(id) {
   var opt = id.split('-');
   if (opt[0] === 'local') {
-    return 'testdb_' + testId + '_' + opt[1];
+    return 'testdb_' + opt[1];
   }
   if (opt[0] === 'http') {
-    return testUtils.couchHost() + '/testdb_' + testId + '_' + opt[1];
+    return testUtils.couchHost() + '/testdb_' + opt[1];
   }
 }
 

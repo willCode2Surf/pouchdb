@@ -8,8 +8,12 @@ var started = new Date();
 if (!testFiles.length) {
   testFiles = [
     'test.setup.js',
-    'test.basics.js', 'test.all_dbs.js', 'test.changes.js',
-    'test.bulk_docs.js', 'test.all_docs.js', 'test.conflicts.js',
+    'test.basics.js',
+    //'test.all_dbs.js',
+    //'test.changes.js',
+    'test.bulk_docs.js',
+    //'test.all_docs.js',
+    'test.conflicts.js',
     'test.revs_diff.js',
     'test.replication.js', 'test.views.js', 'test.taskqueue.js',
     'test.design_docs.js', 'test.issue221.js', 'test.http.js',
