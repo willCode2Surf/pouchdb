@@ -275,6 +275,7 @@ adapters.map(function(adapter) {
         db.compact(function(err, ok) {
           db.get("foo", {revs_info: true}, function(err, doc) {
             var revs = doc._revs_info;
+            console.log(doc);
             strictEqual(revs.length, 3, "correct number of revs");
             strictEqual(revs[0].rev, "3-c", "rev ok");
             strictEqual(revs[0].status, "available", "not compacted");
