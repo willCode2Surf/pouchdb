@@ -68,10 +68,14 @@ testUtils.cleanupTestDatabases = function(alreadyStopped_) {
     }
   }
 
-  PouchDB.allDbs(function(err, dbs) {
+  PouchDB.allDbs(function(err, oDBS) {
+    var dbs = oDBS.filter(function(v){
+      return v;
+    });
     if (!dbs.length) {
       finished();
     }
+    console.log(dbs);
     dbCount = dbs.length;
     dbs.forEach(function(db) {
       PouchDB.destroy(db, dbDeleted);
