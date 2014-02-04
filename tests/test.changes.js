@@ -701,7 +701,30 @@ adapters.map(function(adapter) {
       db.post({test:"adoc"});
     });
   });
-
+  asyncTest("Cancel changes since latest", function() {
+    testUtils.initTestDB(this.name, function(err, db) {
+      var count = 0;
+      var changes = db.changes({
+        since: 'latest',
+        onChange: function(change) {
+          count += 1;
+          if (count === 1) {
+            changes.cancel();
+            db.post({test:"another doc"}, function(err, info) {
+              // This setTimeout ensures that once we cancel a change we dont recieve
+              // subsequent callbacks, so it is needed
+              setTimeout(function() {
+                equal(count, 1);
+                start();
+              }, 200);
+            });
+          }
+        },
+        continuous: true
+      });
+      db.post({test:"adoc"});
+    });
+  });
   asyncTest("Kill database while listening to continuous changes", function(done) {
     var name = this.name;
     testUtils.initTestDB(this.name, function(err, db) {
